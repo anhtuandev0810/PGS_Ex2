@@ -15,34 +15,33 @@ import { ACCESS_TOKEN_KEY } from '../../../utils/constants';
 import { ROUTES } from '../../../configs/routes';
 import { replace } from 'connected-react-router';
 import { getErrorMessageResponse } from '../../../utils';
+import { values } from 'lodash';
+import { FormattedMessage } from 'react-intl';
 
 const LoginPage = () => {
-  const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();  
 
-  const onLogin = React.useCallback(
-    async (values: ILoginParams) => {
-      setErrorMessage('');
-      setLoading(true);
+  const onLogin = React.useCallback(async (values: ILoginParams) => {
+    setErrorMessage('');
+    setLoading(true);
+    const json = await dispatch (
+      fetchThunk(API_PATHS.signIn, 'post', {email: values.email, password: values.password}),
+    );
+    setLoading(false);
+    if(json?.code === RESPONSE_STATUS_SUCCESS) {
+      //dispatch action setUSerdata:
+      dispatch(setUserInfo(json.data));
+      //set login token to cookie when click on rememberMe:
+      Cookies.set(ACCESS_TOKEN_KEY, json.data.token, {expires: values.rememberMe? 7: undefined});
+      //replace Url to home page:
+      dispatch(replace(ROUTES.home));
+      return;
+    }
+    setErrorMessage(getErrorMessageResponse(json));
+  },[dispatch]);
 
-      const json = await dispatch(
-        fetchThunk(API_PATHS.signIn, 'post', { email: values.email, password: values.password }),
-      );
-
-      setLoading(false);
-
-      if (json?.code === RESPONSE_STATUS_SUCCESS) {
-        dispatch(setUserInfo(json.data));
-        Cookies.set(ACCESS_TOKEN_KEY, json.data.token, { expires: values.rememberMe ? 7 : undefined });
-        dispatch(replace(ROUTES.home));
-        return;
-      }
-
-      setErrorMessage(getErrorMessageResponse(json));
-    },
-    [dispatch],
-  );
 
   return (
     <div
@@ -58,6 +57,9 @@ const LoginPage = () => {
       <img src={logo} alt="" style={{ maxWidth: '250px', margin: '32px' }} />
 
       <LoginForm onLogin={onLogin} loading={loading} errorMessage={errorMessage} />
+      <a href = "/sign-up">
+        <FormattedMessage id = 'register'/>
+      </a>
     </div>
   );
 };
