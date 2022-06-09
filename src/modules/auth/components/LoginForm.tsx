@@ -62,6 +62,7 @@ const LoginForm = (props: Props) => {
         </label>
         <input 
           type = "password" 
+          placeholder = '4 more characters'
           className = "form-control" 
           id = "inputPassword" 
           value = {formValues.password} 

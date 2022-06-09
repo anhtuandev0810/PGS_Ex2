@@ -25,6 +25,19 @@ const validatePassword = (password: string) => {
     return '';
 };
 
+//Validate repeate password:
+const validateRepeatPassword = (password: string, repeatPassword: string) => {
+    if(!repeatPassword) {
+        return 'Repeat Password Requires';
+    }
+    if(password !== repeatPassword) {
+        return 'Password not match';
+    }
+    return '';
+};
+
+
+
 export const validateLogin = (values: ILoginParams): ILoginValidation => {
     return {
         email: validateEmail(values.email),
