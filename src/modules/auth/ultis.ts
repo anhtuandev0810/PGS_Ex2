@@ -1,4 +1,4 @@
-import {ILoginParams, ILoginValidation} from '../../models/auth';
+import {ILoginParams, ILoginValidation, ISignupParams, ISignupValidation} from '../../models/auth';
 import {validEmailRegex} from '../../utils';
 
 //Validate email:
@@ -36,7 +36,27 @@ const validateRepeatPassword = (password: string, repeatPassword: string) => {
     return '';
 };
 
+//Validate Field:
+const validateField = (field: string, value: string) => {
+    if(value) return '';
+    let fieldRequire = '';
+    switch(field) {
+        case 'name':
+            fieldRequire = 'nameRequire'
+            break;
+        case 'render':
+            fieldRequire = 'genderRequire'
+            break;
+        case 'region':
+            fieldRequire = 'regionRequire'
+            break;
+        case 'state':
+            fieldRequire = 'stateRequire'
+            break;
+    }
+    return fieldRequire;
 
+};
 
 export const validateLogin = (values: ILoginParams): ILoginValidation => {
     return {
@@ -45,6 +65,22 @@ export const validateLogin = (values: ILoginParams): ILoginValidation => {
     };
 };
 
+export const validateSignUp = (values: ISignupParams): ISignupValidation => {
+    return {
+        email: validateEmail(values.email),
+        password: validatePassword(values.password),
+        repeatPassword: validateRepeatPassword(values.password, values.repeatPassword),
+        name: (values.name),
+        gender: (values.gender), 
+        region: (values.region),
+        state: (values.state)
+    };
+};
+
 export const validLogin = (values: ILoginValidation) => {
+    return (!values.email && !values.password);
+};
+
+export const validSignUp = (values: ISignupValidation) => {
     return (!values.email && !values.password);
 };

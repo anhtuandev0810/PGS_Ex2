@@ -19,6 +19,16 @@ export interface ISignupParams {
   state: string;
 }
 
+export interface ISignupValidation {
+  email: string,
+  password: string, 
+  repeatPassword: string,
+  name: string,
+  gender: string,
+  region: string,
+  state: string
+}
+
 export interface IGenderParams {
   label: string;
   value: string;
